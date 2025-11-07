@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
+//@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-public class StudentController {
+public class    StudentController {
     private final StudentServie studentServie;
 
     public StudentController(StudentServie studentServie) {
