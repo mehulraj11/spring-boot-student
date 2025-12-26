@@ -32,6 +32,7 @@ public class StudentImplementation implements StudentServie {
                 .toList();
     }
 
+    @Override
     public StudentDto getStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("student not found with id"));
         return new StudentDto(
@@ -42,6 +43,7 @@ public class StudentImplementation implements StudentServie {
                 student.getCourse());
     }
 
+    @Override
     public StudentDto createNewStudent(AddStudentDto addStudentDto) {
         Student newStudent = new Student();
         newStudent.setName(addStudentDto.getName());
@@ -58,11 +60,13 @@ public class StudentImplementation implements StudentServie {
         );
     }
 
+    @Override
     public void deleteStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("student not found on delete"));
         studentRepository.delete(student);
     }
 
+    @Override
     public StudentDto updateStudent(Long id, AddStudentDto addStudentDto) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Student doesn't exist"));
@@ -83,6 +87,7 @@ public class StudentImplementation implements StudentServie {
         );
     }
 
+    @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("error in patch"));
         updates.forEach((key, value) -> {
