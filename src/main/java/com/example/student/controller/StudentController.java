@@ -3,6 +3,7 @@ package com.example.student.controller;
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
 import com.example.student.service.StudentServie;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class    StudentController {
     }
 
     @PostMapping("/students")
-    public ResponseEntity<StudentDto> createStudent(@RequestBody AddStudentDto addStudentDto) {
+    public ResponseEntity<StudentDto> createStudent(@Valid @RequestBody AddStudentDto addStudentDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentServie.createNewStudent(addStudentDto));
     }
 

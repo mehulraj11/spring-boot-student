@@ -1,9 +1,18 @@
 package com.example.student.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class AddStudentDto {
+    @NotBlank(message = "Name is Required")
     private String name;
+    @NotNull
     private String registration_no;
+    @Email(message = "Invalid email Format")
+    @NotBlank
     private String email;
+    @NotBlank(message = "Course Required")
     private String course;
 
     public AddStudentDto() {

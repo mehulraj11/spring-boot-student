@@ -7,8 +7,7 @@ import com.example.student.repository.StudentRepository;
 import com.example.student.service.StudentServie;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class StudentImplementation implements StudentServie {
@@ -17,7 +16,9 @@ public class StudentImplementation implements StudentServie {
     public StudentImplementation(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
-
+ArrayList<Integer> a = new ArrayList<>();
+    Stack<Integer> s = new Stack<>();
+    LinkedList<Integer> l = new LinkedList<>();
     @Override
     public List<StudentDto> getAllStudents() {
         List<Student> students = studentRepository.findAll();
