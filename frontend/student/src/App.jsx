@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const apiBase = "spring-boot-student-production.up.railway.app";
+const apiBase = "https://spring-boot-student-production.up.railway.app";
 
 export default function App() {
   const [students, setStudents] = useState([]);
