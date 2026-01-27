@@ -2,7 +2,6 @@ package com.example.student.dto;
 
 
 public class StudentDto {
-    private Long id;
     private String name;
     private String registration_no;
     private String email;
@@ -11,20 +10,11 @@ public class StudentDto {
     public StudentDto() {
     }
 
-    public StudentDto(Long id, String name, String registrationNo, String email, String course) {
-        this.id = id;
+    public StudentDto(String name, String registrationNo, String email, String course) {
         this.name = name;
         this.registration_no = registrationNo;
         this.email = email;
         this.course = course;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

@@ -7,16 +7,13 @@ export default function App() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    registrationNo: "",
+    registration_no: "",
     course: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+  const [developer, setDeveloper] = useState("");
 
   const fetchStudents = async () => {
     setLoading(true);
@@ -32,13 +29,28 @@ export default function App() {
     }
   };
 
+  const fetchDeveloperDetails = async () => {
+    try {
+      const res = await fetch(`${apiBase}/developer`);
+      const data = await res.json();
+      setDeveloper(data);
+    } catch (error) {
+      setError("Failed to fetch Developer");
+    }
+  };
+  useEffect(() => {
+    fetchStudents();
+    fetchDeveloperDetails();
+  }, []);
+  console.log(students);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.registrationNo || !form.course) {
+    if (!form.name || !form.email || !form.registration_no || !form.course) {
       setError("All fields are required");
       return;
     }
@@ -57,7 +69,7 @@ export default function App() {
           body: JSON.stringify(form),
         });
       }
-      setForm({ name: "", email: "", registrationNo: "", course: "" });
+      setForm({ name: "", email: "", registration_no: "", course: "" });
       setEditingId(null);
       setError("");
       fetchStudents();
@@ -70,7 +82,7 @@ export default function App() {
 
   const handleEdit = (student) => {
     setForm(student);
-    setEditingId(student.registrationNo);
+    setEditingId(student.registration_no);
     setError("");
   };
 
@@ -121,7 +133,7 @@ export default function App() {
             type="text"
             name="registrationNo"
             placeholder="Registration No"
-            value={form.registrationNo}
+            value={form.registration_no}
             onChange={handleChange}
             disabled={!!editingId}
             className={`flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
@@ -181,7 +193,7 @@ export default function App() {
                     {student.email}
                   </td>
                   <td className="p-3 border border-blue-200">
-                    {student.registrationNo}
+                    {student.registration_no}
                   </td>
                   <td className="p-3 border border-blue-200">
                     {student.course}
@@ -208,6 +220,10 @@ export default function App() {
           </table>
         </div>
       )}
+
+      <div className="border">
+        <p>This is developed by {developer.name}</p>
+      </div>
     </div>
   );
 }

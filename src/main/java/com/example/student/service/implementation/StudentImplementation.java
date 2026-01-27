@@ -3,6 +3,7 @@ package com.example.student.service.implementation;
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
 import com.example.student.entity.Student;
+import com.example.student.exception.StudentException;
 import com.example.student.repository.StudentRepository;
 import com.example.student.service.StudentServie;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,13 @@ public class StudentImplementation implements StudentServie {
     public StudentImplementation(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
-ArrayList<Integer> a = new ArrayList<>();
-    Stack<Integer> s = new Stack<>();
-    LinkedList<Integer> l = new LinkedList<>();
+
     @Override
     public List<StudentDto> getAllStudents() {
         List<Student> students = studentRepository.findAll();
         return students
                 .stream()
                 .map(student -> new StudentDto(
-                        student.getId(),
                         student.getName(),
                         student.getRegistration_no(),
                         student.getEmail(),
@@ -35,9 +33,8 @@ ArrayList<Integer> a = new ArrayList<>();
 
     @Override
     public StudentDto getStudent(Long id) {
-        Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("student not found with id"));
+        Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         return new StudentDto(
-                student.getId(),
                 student.getName(),
                 student.getRegistration_no(),
                 student.getEmail(),
@@ -53,7 +50,6 @@ ArrayList<Integer> a = new ArrayList<>();
         newStudent.setRegistration_no(addStudentDto.getRegistration_no());
         Student student = studentRepository.save(newStudent);
         return new StudentDto(
-                student.getId(),
                 student.getName(),
                 student.getRegistration_no(),
                 student.getEmail(),
@@ -63,14 +59,14 @@ ArrayList<Integer> a = new ArrayList<>();
 
     @Override
     public void deleteStudent(Long id) {
-        Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("student not found on delete"));
+        Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         studentRepository.delete(student);
     }
 
     @Override
     public StudentDto updateStudent(Long id, AddStudentDto addStudentDto) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Student doesn't exist"));
+                .orElseThrow(() -> new StudentException(id));
 
         student.setName(addStudentDto.getName());
         student.setRegistration_no(addStudentDto.getRegistration_no());
@@ -80,7 +76,6 @@ ArrayList<Integer> a = new ArrayList<>();
         Student updatedStudent = studentRepository.save(student);
 
         return new StudentDto(
-                updatedStudent.getId(),
                 updatedStudent.getName(),
                 updatedStudent.getRegistration_no(),
                 updatedStudent.getEmail(),
@@ -90,7 +85,7 @@ ArrayList<Integer> a = new ArrayList<>();
 
     @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
-        Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("error in patch"));
+        Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         updates.forEach((key, value) -> {
             switch (key) {
                 case "name" -> student.setName((String) value);
@@ -101,7 +96,6 @@ ArrayList<Integer> a = new ArrayList<>();
         });
         Student updated = studentRepository.save(student);
         return new StudentDto(
-                updated.getId(),
                 updated.getName(),
                 updated.getRegistration_no(),
                 updated.getEmail(),
