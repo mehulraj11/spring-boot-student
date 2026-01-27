@@ -14,6 +14,7 @@ public class MyConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("https://spring-boot-student.onrender.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };

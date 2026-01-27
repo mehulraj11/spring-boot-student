@@ -131,7 +131,7 @@ export default function App() {
         <div className="flex flex-col md:flex-row gap-4">
           <input
             type="text"
-            name="registrationNo"
+            name="registration_no"
             placeholder="Registration No"
             value={form.registration_no}
             onChange={handleChange}
