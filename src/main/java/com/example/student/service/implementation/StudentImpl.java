@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class StudentImplementation implements StudentServie {
+public class StudentImpl implements StudentServie {
     private final StudentRepository studentRepository;
 
-    public StudentImplementation(StudentRepository studentRepository) {
+    public StudentImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
