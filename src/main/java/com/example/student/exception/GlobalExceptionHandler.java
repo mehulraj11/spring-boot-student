@@ -13,6 +13,20 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UserRegistrationException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserRegistraionException(UserRegistrationException ex){
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+    @ExceptionHandler(UserAlreadyExists.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateUser(UserAlreadyExists ex){
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+                HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(StudentException.class)
     public ResponseEntity<ErrorResponseDto> handleStudentException(StudentException ex) {
         return new ResponseEntity<>(
