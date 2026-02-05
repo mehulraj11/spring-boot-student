@@ -1,5 +1,6 @@
 package com.example.student.entity;
 
+import com.example.student.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

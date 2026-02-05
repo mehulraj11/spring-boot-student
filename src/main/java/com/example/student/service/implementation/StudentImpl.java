@@ -2,7 +2,7 @@ package com.example.student.service.implementation;
 
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
-import com.example.student.entity.Role;
+import com.example.student.enums.Role;
 import com.example.student.entity.Student;
 import com.example.student.entity.Users;
 import com.example.student.exception.CreateStudentException;
@@ -33,6 +33,13 @@ public class StudentImpl implements StudentServie {
 
     @Override
     public List<StudentDto> getAllStudents() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = auth.getName();
+        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
+                .orElseThrow(()-> new IllegalArgumentException("email not found"));
+        if(loggedInUser.getRole() == Role.STUDENT){
+            throw new UnauthorizedAccess("not authorized");
+        }
         List<Student> students = studentRepository.findAll();
         return students
                 .stream()
@@ -98,6 +105,14 @@ public class StudentImpl implements StudentServie {
 
     @Override
     public StudentDto updateStudent(Long id, AddStudentDto addStudentDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = auth.getName();
+        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
+                .orElseThrow(()-> new StudentException(id));
+
+        if(loggedInUser.getRole() == Role.STUDENT){
+            throw new UnauthorizedAccess("not authorized");
+        }
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentException(id));
 
@@ -114,6 +129,14 @@ public class StudentImpl implements StudentServie {
 
     @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = auth.getName();
+        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
+                .orElseThrow(()-> new StudentException(id));
+
+        if(loggedInUser.getRole() == Role.STUDENT){
+            throw new UnauthorizedAccess("not authorized");
+        }
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         updates.forEach((key, value) -> {
             switch (key) {

@@ -1,7 +1,6 @@
 package com.example.student.config;
 
-import com.example.student.entity.Permissions;
-import com.example.student.entity.Role;
+import com.example.student.enums.Permissions;
 import com.example.student.filter.JwtFilter;
 import com.example.student.service.implementation.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/register",
                                 "/login",
-                                "/file/upload")
+                                "/scholarship/**",
+                                "/file/upload",
+                                "/apply/**",
+                                "/scholarship-application/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,"/students/**")
                             .hasAuthority(Permissions.STUDENT_READ.name())

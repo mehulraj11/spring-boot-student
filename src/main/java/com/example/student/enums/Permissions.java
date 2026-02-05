@@ -1,4 +1,4 @@
-package com.example.student.entity;
+package com.example.student.enums;
 
 public enum Permissions {
     STUDENT_READ,
