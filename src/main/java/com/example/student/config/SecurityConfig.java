@@ -43,13 +43,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/register",
-                                "/login")
+                                "/login",
+                                "/file/upload")
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET,"/students/**").hasAuthority(Permissions.STUDENT_READ.name())
-                        .requestMatchers(HttpMethod.POST,"/students/**").hasAuthority(Permissions.STUDENT_WRITE.name())
-                        .requestMatchers(HttpMethod.DELETE,"/students/**").hasAuthority(Permissions.STUDENT_DELETE.name())
-                        .requestMatchers(HttpMethod.PUT,"/students/**").hasAuthority(Permissions.STUDENT_WRITE.name())
-                        .requestMatchers(HttpMethod.PATCH,"/students/**").hasAuthority(Permissions.STUDENT_WRITE.name())
+                        .requestMatchers(HttpMethod.GET,"/students/**")
+                            .hasAuthority(Permissions.STUDENT_READ.name())
+                        .requestMatchers(HttpMethod.POST,"/students/**")
+                            .hasAuthority(Permissions.STUDENT_WRITE.name())
+                        .requestMatchers(HttpMethod.DELETE,"/students/**")
+                            .hasAuthority(Permissions.STUDENT_DELETE.name())
+                        .requestMatchers(HttpMethod.PUT,"/students/**")
+                            .hasAuthority(Permissions.STUDENT_WRITE.name())
+                        .requestMatchers(HttpMethod.PATCH,"/students/**")
+                            .hasAuthority(Permissions.STUDENT_WRITE.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session

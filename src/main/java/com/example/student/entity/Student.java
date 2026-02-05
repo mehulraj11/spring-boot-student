@@ -1,29 +1,30 @@
 package com.example.student.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
 
 @Entity
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String registration_no;
-    private String email;
-    private String course;
+    @OneToOne
+    @JoinColumn(name = "usersId", nullable = false, unique = true)
+    private Users users;
 
+    private String name;
+    private LocalDate dob;
+//    private String doc;
     public Student() {
     }
 
-    public Student(Long id, String course, String email, String registration_no, String name) {
+    public Student(Long id, Users users, String name, LocalDate dob) {
         this.id = id;
-        this.course = course;
-        this.email = email;
-        this.registration_no = registration_no;
+        this.users = users;
         this.name = name;
+        this.dob = dob;
+//        this.doc = doc;
     }
 
     public Long getId() {
@@ -34,28 +35,12 @@ public class Student {
         this.id = id;
     }
 
-    public String getCourse() {
-        return course;
+    public Users getUsers() {
+        return users;
     }
 
-    public void setCourse(String course) {
-        this.course = course;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRegistration_no() {
-        return registration_no;
-    }
-
-    public void setRegistration_no(String registration_no) {
-        this.registration_no = registration_no;
+    public void setUsers(Users users) {
+        this.users = users;
     }
 
     public String getName() {
@@ -65,4 +50,20 @@ public class Student {
     public void setName(String name) {
         this.name = name;
     }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+//    public String getDoc() {
+//        return doc;
+//    }
+//
+//    public void setDoc(String doc) {
+//        this.doc = doc;
+//    }
 }

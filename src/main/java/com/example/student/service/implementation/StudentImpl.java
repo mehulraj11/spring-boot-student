@@ -2,20 +2,33 @@ package com.example.student.service.implementation;
 
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
+import com.example.student.entity.Role;
 import com.example.student.entity.Student;
+import com.example.student.entity.Users;
+import com.example.student.exception.CreateStudentException;
 import com.example.student.exception.StudentException;
+import com.example.student.exception.UnauthorizedAccess;
 import com.example.student.repository.StudentRepository;
+import com.example.student.repository.UserRepository;
 import com.example.student.service.StudentServie;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@Slf4j
 public class StudentImpl implements StudentServie {
     private final StudentRepository studentRepository;
-
-    public StudentImpl(StudentRepository studentRepository) {
+    private final UserRepository userRepository;
+    @Autowired
+    public StudentImpl(StudentRepository studentRepository, UserRepository userRepository) {
         this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -25,9 +38,7 @@ public class StudentImpl implements StudentServie {
                 .stream()
                 .map(student -> new StudentDto(
                         student.getName(),
-                        student.getRegistration_no(),
-                        student.getEmail(),
-                        student.getCourse()))
+                        student.getDob()))
                 .toList();
     }
 
@@ -36,29 +47,51 @@ public class StudentImpl implements StudentServie {
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         return new StudentDto(
                 student.getName(),
-                student.getRegistration_no(),
-                student.getEmail(),
-                student.getCourse());
+                student.getDob());
     }
 
     @Override
-    public StudentDto createNewStudent(AddStudentDto addStudentDto) {
-        Student newStudent = new Student();
-        newStudent.setName(addStudentDto.getName());
-        newStudent.setCourse(addStudentDto.getCourse());
-        newStudent.setEmail(addStudentDto.getEmail());
-        newStudent.setRegistration_no(addStudentDto.getRegistration_no());
-        Student student = studentRepository.save(newStudent);
+    public StudentDto createNewStudent(AddStudentDto addStudentDto) throws CreateStudentException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = auth.getName();
+
+        Users loggedInUser = userRepository.findByEmail(authUserEmail)
+                .orElseThrow(()->new IllegalArgumentException("not found"));
+        log.info("not able to find user : {}", authUserEmail);
+        Users targetUser;
+        if (loggedInUser.getRole() == Role.STUDENT) {
+            targetUser = loggedInUser;
+        }else{
+            if (addStudentDto.getUserId() == null) {
+                throw new CreateStudentException("userId is required for admin/verifier");
+            }
+            targetUser = userRepository.findById(addStudentDto.getUserId())
+                    .orElseThrow(() -> new CreateStudentException("Target user not found"));
+        }
+        if (studentRepository.existsByUsersId(targetUser.getId())) {
+            throw new CreateStudentException("Student profile already exists");
+        }
+        Student student = new Student();
+        student.setUsers(targetUser);
+        student.setName(addStudentDto.getName());
+        student.setDob(addStudentDto.getDob());
+        Student createdStudent = studentRepository.save(student);
         return new StudentDto(
-                student.getName(),
-                student.getRegistration_no(),
-                student.getEmail(),
-                student.getCourse()
+                createdStudent.getName(),
+                createdStudent.getDob()
         );
     }
 
     @Override
     public void deleteStudent(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = auth.getName();
+        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
+                .orElseThrow(()-> new IllegalArgumentException("email not found"));
+        if(loggedInUser.getRole() != Role.ADMIN){
+            log.info("unauthorized access : {}", loggedInUser.getEmail());
+            throw new UnauthorizedAccess("only admins allowed");
+        }
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         studentRepository.delete(student);
     }
@@ -69,17 +102,13 @@ public class StudentImpl implements StudentServie {
                 .orElseThrow(() -> new StudentException(id));
 
         student.setName(addStudentDto.getName());
-        student.setRegistration_no(addStudentDto.getRegistration_no());
-        student.setEmail(addStudentDto.getEmail());
-        student.setCourse(addStudentDto.getCourse());
+        student.setDob(addStudentDto.getDob());
 
         Student updatedStudent = studentRepository.save(student);
 
         return new StudentDto(
                 updatedStudent.getName(),
-                updatedStudent.getRegistration_no(),
-                updatedStudent.getEmail(),
-                updatedStudent.getCourse()
+                updatedStudent.getDob()
         );
     }
 
@@ -89,17 +118,13 @@ public class StudentImpl implements StudentServie {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "name" -> student.setName((String) value);
-                case "registration_no" -> student.setRegistration_no((String) value);
-                case "email" -> student.setEmail((String) value);
-                case "course" -> student.setCourse((String) value);
+                case "dob" -> student.setDob((LocalDate) value);
             }
         });
         Student updated = studentRepository.save(student);
         return new StudentDto(
                 updated.getName(),
-                updated.getRegistration_no(),
-                updated.getEmail(),
-                updated.getCourse()
+                updated.getDob()
         );
     }
 }

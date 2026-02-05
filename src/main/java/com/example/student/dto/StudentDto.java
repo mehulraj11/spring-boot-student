@@ -1,20 +1,15 @@
 package com.example.student.dto;
 
 
+import java.time.LocalDate;
+
 public class StudentDto {
     private String name;
-    private String registration_no;
-    private String email;
-    private String course;
+    private LocalDate dob;
 
-    public StudentDto() {
-    }
-
-    public StudentDto(String name, String registrationNo, String email, String course) {
+    public StudentDto(String name, LocalDate dob) {
         this.name = name;
-        this.registration_no = registrationNo;
-        this.email = email;
-        this.course = course;
+        this.dob = dob;
     }
 
     public String getName() {
@@ -25,27 +20,11 @@ public class StudentDto {
         this.name = name;
     }
 
-    public String getRegistration_no() {
-        return registration_no;
+    public LocalDate getDob() {
+        return dob;
     }
 
-    public void setRegistration_no(String registration_no) {
-        this.registration_no = registration_no;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
-    public void setCourse(String course) {
-        this.course = course;
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 }

@@ -4,25 +4,32 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 public class AddStudentDto {
+    private Long userId;
+
     @NotBlank(message = "Name is Required")
     private String name;
-    @NotNull
-    private String registration_no;
-    @Email(message = "Invalid email Format")
-    @NotBlank
-    private String email;
-    @NotBlank(message = "Course Required")
-    private String course;
+
+    @NotNull(message = "DOB is required")
+    private LocalDate dob;
+
 
     public AddStudentDto() {
     }
-
-    public AddStudentDto(String name, String course, String email, String registration_no) {
+    public AddStudentDto(Long userId, String name, LocalDate dob) {
+        this.userId = userId;
         this.name = name;
-        this.course = course;
-        this.email = email;
-        this.registration_no = registration_no;
+        this.dob = dob;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -33,27 +40,11 @@ public class AddStudentDto {
         this.name = name;
     }
 
-    public String getRegistration_no() {
-        return registration_no;
+    public LocalDate getDob() {
+        return dob;
     }
 
-    public void setRegistrationNo(String registration_no) {
-        this.registration_no = registration_no;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
-    public void setCourse(String course) {
-        this.course = course;
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 }
