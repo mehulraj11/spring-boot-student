@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
 //    LOGIN:
@@ -42,22 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/register",
-                                "/login",
-                                "/scholarship/**",
-                                "/file/upload",
-                                "/apply/**",
-                                "/scholarship-application/**")
+                                "/login")
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET,"/students/**")
-                            .hasAuthority(Permissions.STUDENT_READ.name())
-                        .requestMatchers(HttpMethod.POST,"/students/**")
-                            .hasAuthority(Permissions.STUDENT_WRITE.name())
-                        .requestMatchers(HttpMethod.DELETE,"/students/**")
-                            .hasAuthority(Permissions.STUDENT_DELETE.name())
-                        .requestMatchers(HttpMethod.PUT,"/students/**")
-                            .hasAuthority(Permissions.STUDENT_WRITE.name())
-                        .requestMatchers(HttpMethod.PATCH,"/students/**")
-                            .hasAuthority(Permissions.STUDENT_WRITE.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session

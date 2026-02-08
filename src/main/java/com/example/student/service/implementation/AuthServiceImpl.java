@@ -41,33 +41,30 @@ public class AuthServiceImpl implements AuthService {
     public Users register(Users user) {
         log.info("Starting user registration for username: {}", user.getUsername());
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            log.error("email already existed : {}", user.getUsername());
-            throw new UserAlreadyExists(
-                    "email already taken"
-            );
+            log.error("email already existed : {}", user.getEmail());
+            throw new UserAlreadyExists("email already taken");
         }
         try {
             user.setPassword(encoder.encode(user.getPassword()));
+            log.info("{} has been registered",user.getEmail());
             return userRepository.save(user);
 
         } catch (DataIntegrityViolationException ex) {
-            log.error("username already exists :{}", user.getUsername(), ex);
-            throw new UserRegistrationException("username already exists");
+            log.error("Error: {}", ex.getMessage());
+            throw new UserRegistrationException(ex.getMessage());
         } catch (Exception ex) {
-            log.error("unexpected error occurred", ex);
-            throw new UserRegistrationException("unexpected error");
+            log.error("unexpected error occurred :{}", ex.getMessage());
+            throw new UserRegistrationException(ex.getMessage());
         }
     }
 
     @Override
-    public String generateToken(AuthRequest authRequest) {
-        try {
+    public String generateToken(AuthRequest authRequest)  {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
+
+            log.info("{} has generated login token", authRequest.getEmail());
             return jwtUtil.generateToken(authRequest.getEmail());
-        } catch (Exception e) {
-            throw e;
-        }
     }
 }

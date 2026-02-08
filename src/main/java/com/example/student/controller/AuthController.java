@@ -3,6 +3,8 @@ package com.example.student.controller;
 import com.example.student.entity.AuthRequest;
 import com.example.student.entity.Users;
 import com.example.student.service.AuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +18,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Users registerUser(@RequestBody Users user){
-        return authService.register(user);
+    public ResponseEntity<Users> registerUser(@RequestBody Users user){
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(user));
     }
 
     @PostMapping("/login")
-    public String generateToken(@RequestBody AuthRequest authRequest){return authService.generateToken(authRequest);}
+    public ResponseEntity<String> generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+       return ResponseEntity.status(HttpStatus.OK).body(authService.generateToken(authRequest));
+    }
 }

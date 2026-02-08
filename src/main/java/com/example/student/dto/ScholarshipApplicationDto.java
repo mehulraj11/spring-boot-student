@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class ScholarshipApplicationDto {
 
-    private Long applicationId;
+    private Long scholarshipApplicationId;
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
 
@@ -22,7 +22,7 @@ public class ScholarshipApplicationDto {
     private Double amount;
 
     public ScholarshipApplicationDto(
-            Long applicationId,
+            Long scholarshipApplicationId,
             ApplicationStatus status,
             LocalDateTime appliedAt,
 
@@ -36,7 +36,7 @@ public class ScholarshipApplicationDto {
             String scholarshipTitle,
             Double amount
     ) {
-        this.applicationId = applicationId;
+        this.scholarshipApplicationId = scholarshipApplicationId;
         this.status = status;
         this.appliedAt = appliedAt;
         this.studentId = studentId;
@@ -48,8 +48,8 @@ public class ScholarshipApplicationDto {
         this.amount = amount;
     }
 
-    public Long getApplicationId() {
-        return applicationId;
+    public Long getScholarshipApplicationId() {
+        return scholarshipApplicationId;
     }
 
     public ApplicationStatus getStatus() {

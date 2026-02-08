@@ -10,12 +10,13 @@ import com.example.student.repository.ScholarshipApplicationRepository;
 import com.example.student.repository.ScholarshipRepository;
 import com.example.student.repository.StudentRepository;
 import com.example.student.service.ScholarshipApplicationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Slf4j
 @Service
 public class ScholarshipApplicationImpl implements ScholarshipApplicationService {
     private final StudentRepository studentRepository;
@@ -44,12 +45,14 @@ public class ScholarshipApplicationImpl implements ScholarshipApplicationService
         scholarshipApplication.setScholarship(scholarship);
         scholarshipApplication.setStatus(ApplicationStatus.APPLIED);
         scholarshipApplication.setAppliedAt(LocalDateTime.now());
+        log.info("{} has applied for scholarship with id{}",student.getName(), scholarship.getScholarshipId());
 
         scholarshipApplicationRepository.save(scholarshipApplication);
     }
 
     @Override
     public List<ScholarshipApplicationDto> getPendingApplications() {
+        log.info("teacher is getting pending applications for verification");
         return scholarshipApplicationRepository.findApplicationsByStatus(
                 ApplicationStatus.APPLIED
         );

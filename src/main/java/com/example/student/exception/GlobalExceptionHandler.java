@@ -17,6 +17,16 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ContextAuthentication.class)
+    public ResponseEntity<ErrorResponseDto> handleContextAuthentication(ContextAuthentication c){
+        log.info("email not found for authorization :{}", c.getMessage());
+        return new ResponseEntity<>(
+                new ErrorResponseDto(
+                        c.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST);
+    }
+
 //    SQL ERRORS
 @ExceptionHandler(DataIntegrityViolationException.class)
 public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
@@ -71,6 +81,7 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
     }
     @ExceptionHandler(StudentException.class)
     public ResponseEntity<ErrorResponseDto> handleStudentException(StudentException ex) {
+        log.info("student not found with id : {}",ex.getMessage() );
         return new ResponseEntity<>(
                 new ErrorResponseDto(ex.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now()),
                 HttpStatus.NOT_FOUND

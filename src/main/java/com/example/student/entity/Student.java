@@ -8,31 +8,33 @@ import java.time.LocalDate;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long studentId;
     @OneToOne
-    @JoinColumn(name = "usersId", nullable = false, unique = true)
+    @JoinColumn(name = "userId", nullable = false, unique = true)
     private Users users;
 
     private String name;
     private LocalDate dob;
-//    private String doc;
     public Student() {
     }
 
-    public Student(Long id, Users users, String name, LocalDate dob) {
-        this.id = id;
+    public Student(Long studentId,
+                   Users users,
+                   String name,
+                   LocalDate dob
+    ) {
+        this.studentId = studentId;
         this.users = users;
         this.name = name;
         this.dob = dob;
-//        this.doc = doc;
     }
 
-    public Long getId() {
-        return id;
+    public Long getStudentId() {
+        return studentId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
     }
 
     public Users getUsers() {
@@ -59,11 +61,4 @@ public class Student {
         this.dob = dob;
     }
 
-//    public String getDoc() {
-//        return doc;
-//    }
-//
-//    public void setDoc(String doc) {
-//        this.doc = doc;
-//    }
 }

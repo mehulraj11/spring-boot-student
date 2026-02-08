@@ -5,14 +5,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 public class Scholarship {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long scholarshipId;
 
     private String title;
 
@@ -30,7 +27,7 @@ public class Scholarship {
 //    }
 
     public Scholarship(){}
-    public Scholarship(Long id,
+    public Scholarship(Long scholarshipId,
                        String title,
                        String eligibility,
                        Double amount,
@@ -38,7 +35,7 @@ public class Scholarship {
 //                       List<ScholarshipApplication> scholarshipApplicationList
     )
     {
-        this.id = id;
+        this.scholarshipId = scholarshipId;
         this.title = title;
         this.eligibility = eligibility;
         this.amount = amount;
@@ -46,12 +43,12 @@ public class Scholarship {
 //        this.scholarshipApplicationList = scholarshipApplicationList;
     }
 
-    public Long getId() {
-        return id;
+    public Long getScholarshipId() {
+        return scholarshipId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setScholarshipId(Long scholarshipId) {
+        this.scholarshipId = scholarshipId;
     }
 
     public String getTitle() {

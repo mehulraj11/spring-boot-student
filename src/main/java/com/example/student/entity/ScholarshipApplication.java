@@ -17,7 +17,7 @@ public class ScholarshipApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long scholarshipApplicationId;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
@@ -42,7 +42,7 @@ public class ScholarshipApplication {
 
     public ScholarshipApplication(){}
 
-    public ScholarshipApplication(Long id,
+    public ScholarshipApplication(Long scholarshipApplicationId,
                                   Student student,
                                   Scholarship scholarship,
                                   ApplicationStatus status,
@@ -51,7 +51,7 @@ public class ScholarshipApplication {
                                   Users verifier,
                                   String remarks)
     {
-        this.id = id;
+        this.scholarshipApplicationId = scholarshipApplicationId;
         this.student = student;
         this.scholarship = scholarship;
         this.status = status;
@@ -61,12 +61,12 @@ public class ScholarshipApplication {
         this.remarks = remarks;
     }
 
-    public Long getId() {
-        return id;
+    public Long getScholarshipApplicationId() {
+        return scholarshipApplicationId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setScholarshipApplicationId(Long scholarshipApplicationId) {
+        this.scholarshipApplicationId = scholarshipApplicationId;
     }
 
     public Student getStudent() {

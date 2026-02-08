@@ -5,6 +5,7 @@ import com.example.student.entity.Scholarship;
 import com.example.student.service.ScholarshipService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,15 +19,18 @@ public class ScholarshipController {
         this.scholarshipService = scholarshipService;
     }
     @GetMapping("/getall")
+    @PreAuthorize("hasAnyRole('ADMIN','STUDENT','TEACHER')")
     ResponseEntity<List<ScholarshipDto>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(scholarshipService.getAll());
     }
 
-    @GetMapping("/get/{}")
+    @GetMapping("/get/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','STUDENT','TEACHER')")
     ResponseEntity<Scholarship> getById(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(scholarshipService.getById(id));
     }
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<Scholarship> createScholarship(@RequestBody Scholarship scholarship){
         return ResponseEntity.status(HttpStatus.CREATED).body(scholarshipService.create(scholarship));
     }

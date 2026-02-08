@@ -1,6 +1,5 @@
 package com.example.student.filter;
 
-import com.example.student.entity.Users;
 import com.example.student.service.implementation.UserDetailsServiceImpl;
 import com.example.student.utils.JwtUtil;
 import io.jsonwebtoken.JwtException;
@@ -31,14 +30,16 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException
+    {
         String authHeader = request.getHeader("Authorization");
         String Token = null;
         String email = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             Token = authHeader.substring(7);
             try {
-
                 email = jwtUtil.extractEmail(Token);
             } catch (JwtException e) {
                 System.out.println(e.getMessage());
@@ -48,7 +49,10 @@ public class JwtFilter extends OncePerRequestFilter {
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             if (jwtUtil.validateToken(email, userDetails, Token)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

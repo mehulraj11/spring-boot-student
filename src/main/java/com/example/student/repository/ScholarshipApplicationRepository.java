@@ -11,17 +11,17 @@ import java.util.List;
 public interface ScholarshipApplicationRepository extends JpaRepository<ScholarshipApplication, Long> {
     @Query("""
     SELECT new com.example.student.dto.ScholarshipApplicationDto(
-        sa.id,
+        sa.scholarshipApplicationId,
         sa.status,
         sa.appliedAt,
 
-        s.id,
+        s.studentId,
         s.name,
         s.dob,
 
         u.email,
 
-        sc.id,
+        sc.scholarshipId,
         sc.title,
         sc.amount
     )

@@ -3,7 +3,7 @@ package com.example.student.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class ScholarshipDto {
-    private Long id;
+    private Long scholarshipId;
 
     @NotBlank(message = "title required")
     private String title;
@@ -20,12 +20,12 @@ public class ScholarshipDto {
         this.active = active;
     }
 
-    public Long getId() {
-        return id;
+    public Long getScholarshipId() {
+        return scholarshipId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setScholarshipId(Long scholarshipId) {
+        this.scholarshipId = scholarshipId;
     }
 
     public String getTitle() {
