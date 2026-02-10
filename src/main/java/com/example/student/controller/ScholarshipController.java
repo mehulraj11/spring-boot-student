@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -20,8 +23,13 @@ public class ScholarshipController {
     }
     @GetMapping("/getall")
     @PreAuthorize("hasAnyRole('ADMIN','STUDENT','TEACHER')")
-    ResponseEntity<List<ScholarshipDto>> getAll(){
-        return ResponseEntity.status(HttpStatus.OK).body(scholarshipService.getAll());
+    ResponseEntity<List<ScholarshipDto>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "amount") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(scholarshipService.getAll(page,size,sortBy, order));
     }
 
     @GetMapping("/get/{id}")

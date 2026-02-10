@@ -5,6 +5,10 @@ import com.example.student.entity.Scholarship;
 import com.example.student.repository.ScholarshipRepository;
 import com.example.student.service.ScholarshipService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +22,19 @@ public class ScholarshipServiceImpl implements ScholarshipService {
         this.scholarshipRepository = scholarshipRepository;
     }
     @Override
-    public List<ScholarshipDto> getAll() {
-        List<Scholarship> scholarships = scholarshipRepository.findAll();
+    public List<ScholarshipDto> getAll(
+            int page,
+            int size,
+            String sortBy,
+            String order
+    ) {
+        Sort sort = order.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Scholarship> scholarships = scholarshipRepository.findAll(pageable);
         log.info("list of all scholarships has been retrieved");
 
         return scholarships.stream()
@@ -28,7 +43,7 @@ public class ScholarshipServiceImpl implements ScholarshipService {
                         scholarship.getEligibility(),
                         scholarship.getAmount(),
                         scholarship.isActive()
-                ) ).toList();
+                )).toList();
     }
 
     @Override
