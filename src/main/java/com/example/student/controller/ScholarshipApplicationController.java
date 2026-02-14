@@ -1,6 +1,7 @@
 package com.example.student.controller;
 
 import com.example.student.dto.ScholarshipApplicationDto;
+import com.example.student.enums.ApplicationStatus;
 import com.example.student.service.ScholarshipApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,18 @@ public class ScholarshipApplicationController {
         scholarshipApplicationService.apply(studentId, scholarshipId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-    @GetMapping("/applications/pending")
+    @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('TEACHER')")
     public ResponseEntity<List<ScholarshipApplicationDto>> getPendingApplications() {
         return ResponseEntity.ok(
                 scholarshipApplicationService.getPendingApplications()
         );
     }
-
+    @PatchMapping("/verify/{scholarshipApplicationId}")
+    @PreAuthorize("hasAnyRole('TEACHER')")
+    public ResponseEntity<String> applicationVerification(@PathVariable Long scholarshipApplicationId, @RequestParam ApplicationStatus status)
+    {
+        scholarshipApplicationService.verfiyApplication(scholarshipApplicationId, status);
+        return ResponseEntity.ok("application verified");
+    }
 }

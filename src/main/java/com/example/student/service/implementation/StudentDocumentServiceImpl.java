@@ -13,12 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.UUID;
 @Slf4j
 @Service
 public class StudentDocumentServiceImpl implements StudentDocumentService {
@@ -43,7 +39,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        String fileName = storageService.store(file);
+        String fileName = storageService.uploadFile(file);
 
         StudentDocument document = new StudentDocument();
         document.setStudent(student);

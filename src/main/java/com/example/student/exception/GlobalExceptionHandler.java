@@ -59,7 +59,7 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
     }
 
     @ExceptionHandler(UserRegistrationException.class)
-    public ResponseEntity<ErrorResponseDto> handleUserRegistraionException(UserRegistrationException ex){
+    public ResponseEntity<ErrorResponseDto> handleUserRegistrationException(UserRegistrationException ex){
         return new ResponseEntity<>(
                 new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
                 HttpStatus.BAD_REQUEST
@@ -98,7 +98,7 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
     @ExceptionHandler(CreateStudentException.class)
     public ResponseEntity<ErrorResponseDto> handleCreateStudentException(CreateStudentException ex){
 
-        log.warn("create student excpetion : {}", ex.getMessage());
+        log.warn("create student exception : {}", ex.getMessage());
         return new ResponseEntity<>(
                 new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
                 HttpStatus.BAD_REQUEST
@@ -122,6 +122,7 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
             io.jsonwebtoken.JwtException.class
     })
     public ResponseEntity<?> handleJwtException(RuntimeException ex) {
+        log.error("{}",ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired token"));

@@ -1,6 +1,5 @@
 package com.example.student.utils;
 
-import com.example.student.entity.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,13 +28,14 @@ public class JwtUtil {
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
-
+//        this will store the payload of the JWT
+//    used before security context holder works for jwt before complete authentication
     private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(key) //verifies token signature
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token)//checks expiration automatically
+                .getBody();//extract payload and return it as claims object
     }
 
     public boolean validateToken(String email, UserDetails usersDetails, String token) {

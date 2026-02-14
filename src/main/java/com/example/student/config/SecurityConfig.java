@@ -1,12 +1,10 @@
 package com.example.student.config;
 
-import com.example.student.enums.Permissions;
 import com.example.student.filter.JwtFilter;
 import com.example.student.service.implementation.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,7 +25,7 @@ public class SecurityConfig {
 //    LOGIN:
 //    client -> Filter -> AuthenticationManager -> Provider -> UserDetailsService -> jwt generated -> client
 //    Request:
-//    client -> jwt filter -> token validates -> loads user -> security contex -> authorization -> controller
+//    client -> jwt filter -> token validates -> loads user -> spring authentication object set -> security contex -> authorization -> controller
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtFilter jwtFilter;
 
@@ -39,10 +37,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.
-                csrf(csrf -> csrf.disable())
+        return http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/root",
                                 "/register",
                                 "/login")
                         .permitAll()

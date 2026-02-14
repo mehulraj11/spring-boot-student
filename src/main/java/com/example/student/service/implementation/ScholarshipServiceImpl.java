@@ -4,22 +4,27 @@ import com.example.student.dto.ScholarshipDto;
 import com.example.student.entity.Scholarship;
 import com.example.student.repository.ScholarshipRepository;
 import com.example.student.service.ScholarshipService;
+import com.example.student.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 @Slf4j
 @Service
 public class ScholarshipServiceImpl implements ScholarshipService {
 
     private final ScholarshipRepository scholarshipRepository;
+    private final StorageService storageService;
 
-    public ScholarshipServiceImpl(ScholarshipRepository scholarshipRepository){
+    public ScholarshipServiceImpl(ScholarshipRepository scholarshipRepository, StorageService storageService){
         this.scholarshipRepository = scholarshipRepository;
+        this.storageService = storageService;
     }
     @Override
     public List<ScholarshipDto> getAll(
@@ -28,7 +33,7 @@ public class ScholarshipServiceImpl implements ScholarshipService {
             String sortBy,
             String order
     ) {
-        Sort sort = order.equalsIgnoreCase("desc")
+        Sort sort = order.equals("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
@@ -78,5 +83,44 @@ public class ScholarshipServiceImpl implements ScholarshipService {
                 .orElseThrow(()-> new IllegalArgumentException("not found"));
         log.info("{} has been deleted(scholarship)", scholarship.getScholarshipId());
         scholarshipRepository.deleteById(id);
+    }
+    @Override
+    public List<ScholarshipDto> addScholarships(List<ScholarshipDto> scholarshipDtos) {
+        List<Scholarship> scholarships = scholarshipDtos.stream()
+                .map(dto -> new Scholarship(
+                        null,
+                        dto.getTitle(),
+                        dto.getEligibility(),
+                        dto.getAmount(),
+                        dto.isActive()
+                ))
+                .toList();
+
+        List<Scholarship> saved = scholarshipRepository.saveAll(scholarships);
+        return saved.stream()
+                .map(s -> new ScholarshipDto(
+                        s.getTitle(),
+                        s.getEligibility(),
+                        s.getAmount(),
+                        s.isActive()
+                ))
+                .toList();
+    }
+
+    @Override
+    public void uploadCsvFile(MultipartFile file) throws IOException {
+        List<String[]> rows = (List<String[]>) storageService.uploadCsv(file);
+        List<Scholarship> scholarships = rows.stream()
+                .map(data -> {
+                    Scholarship s = new Scholarship();
+                    s.setTitle(data[0]);
+                    s.setEligibility(data[1]);
+                    s.setAmount(Double.parseDouble(data[2]));
+                    s.setActive(Boolean.parseBoolean(data[3]));
+                    return s;
+                })
+                .toList();
+
+        scholarshipRepository.saveAll(scholarships);
     }
 }

@@ -11,7 +11,7 @@ import com.example.student.exception.StudentException;
 import com.example.student.exception.UnauthorizedAccess;
 import com.example.student.repository.StudentRepository;
 import com.example.student.repository.UserRepository;
-import com.example.student.service.StudentServie;
+import com.example.student.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,7 +23,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class StudentServiceImpl implements StudentServie {
+public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     @Autowired
@@ -132,7 +132,7 @@ public class StudentServiceImpl implements StudentServie {
                 updatedStudent.getDob()
         );
     }
-
+//private Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

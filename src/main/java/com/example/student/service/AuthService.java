@@ -4,6 +4,6 @@ import com.example.student.entity.AuthRequest;
 import com.example.student.entity.Users;
 
 public interface AuthService {
-    public Users register(Users user);
-    public String generateToken(AuthRequest authRequest) throws Exception;
+    Users register(Users user);
+    String createToken(AuthRequest authRequest) throws Exception;
 }

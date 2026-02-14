@@ -4,18 +4,27 @@ import com.example.student.dto.ScholarshipApplicationDto;
 import com.example.student.entity.Scholarship;
 import com.example.student.entity.ScholarshipApplication;
 import com.example.student.entity.Student;
+import com.example.student.entity.Users;
 import com.example.student.enums.ApplicationStatus;
 import com.example.student.exception.StudentException;
 import com.example.student.repository.ScholarshipApplicationRepository;
 import com.example.student.repository.ScholarshipRepository;
 import com.example.student.repository.StudentRepository;
+import com.example.student.repository.UserRepository;
 import com.example.student.service.ScholarshipApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class ScholarshipApplicationImpl implements ScholarshipApplicationService {
@@ -23,14 +32,17 @@ public class ScholarshipApplicationImpl implements ScholarshipApplicationService
     private final ScholarshipRepository scholarshipRepository;
 
     private final ScholarshipApplicationRepository scholarshipApplicationRepository;
+    private final UserRepository userRepository;
+
     @Autowired
     public ScholarshipApplicationImpl(StudentRepository studentRepository,
                                       ScholarshipRepository scholarshipRepository,
-                                      ScholarshipApplicationRepository scholarshipApplicationRepository
-    ){
+                                      ScholarshipApplicationRepository scholarshipApplicationRepository,
+                                      UserRepository userRepository){
         this.studentRepository = studentRepository;
         this.scholarshipRepository = scholarshipRepository;
         this.scholarshipApplicationRepository = scholarshipApplicationRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -56,6 +68,23 @@ public class ScholarshipApplicationImpl implements ScholarshipApplicationService
         return scholarshipApplicationRepository.findApplicationsByStatus(
                 ApplicationStatus.APPLIED
         );
+    }
+
+    @Override
+    public void verfiyApplication(Long scholarshipApplicationId, ApplicationStatus status) {
+        Authentication auth = new SecurityContextHolder().getContext().getAuthentication();
+        String email = auth.getName();
+        Users loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UsernameNotFoundException("user not found"));
+        ScholarshipApplication application = scholarshipApplicationRepository.findById(scholarshipApplicationId)
+                .orElseThrow(()-> new IllegalArgumentException("application not found"));
+
+        application.setStatus(status);
+        application.setVerifiedAt(LocalDateTime.now());
+        application.setRemarks("ok");
+        application.setVerifier(loggedInUser);
+        scholarshipApplicationRepository.save(application);
+        log.info("Application with id {} has been verified as {}",scholarshipApplicationId, status);
     }
 
 }

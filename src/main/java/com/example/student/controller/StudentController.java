@@ -2,7 +2,7 @@ package com.example.student.controller;
 
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
-import com.example.student.service.StudentServie;
+import com.example.student.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,46 +15,46 @@ import java.util.Map;
 @RestController
 @RequestMapping("/students")
 public class    StudentController {
-    private final StudentServie studentServie;
+    private final StudentService studentService;
 
-    public StudentController(StudentServie studentServie) {
-        this.studentServie = studentServie;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @GetMapping("/get-all")
     @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public ResponseEntity<List<StudentDto>> getStudents() {
-        return ResponseEntity.status(HttpStatus.OK).body(studentServie.getAllStudents());
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
     }
 
     @GetMapping("/get/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<StudentDto> getStudent(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentServie.getStudent(id));
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.getStudent(id));
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<StudentDto> createStudent(@Valid @RequestBody AddStudentDto addStudentDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentServie.createNewStudent(addStudentDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createNewStudent(addStudentDto));
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-        studentServie.deleteStudent(id);
+        studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public ResponseEntity<StudentDto> updateStudent(@PathVariable Long id, @RequestBody AddStudentDto addStudentDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentServie.updateStudent(id, addStudentDto));
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(id, addStudentDto));
     }
 
     @PatchMapping("/modify/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<StudentDto> patchStudent(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentServie.patchStudent(id, updates));
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.patchStudent(id, updates));
     }
 }
