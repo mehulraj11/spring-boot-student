@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface StorageService {
     String uploadFile(MultipartFile file) throws IOException, java.io.IOException;
-    List<String[]>  uploadCsv(MultipartFile file) throws IOException, java.io.IOException;
+    List<String>  uploadCsv(MultipartFile file) throws IOException, java.io.IOException;
 }

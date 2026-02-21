@@ -1,229 +1,78 @@
-import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import AuthProvider from "./auth/AuthContext";
+import CreateProfile from "./pages/CreateStudentProfile";
+import AllScholarships from "./pages/AllScholarships";
+import UploadDocuments from "./pages/UploadDocuments";
 
-const apiBase = "https://spring-boot-student-production.up.railway.app";
-
-export default function App() {
-  const [students, setStudents] = useState([]);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    registration_no: "",
-    course: "",
-  });
-  const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [developer, setDeveloper] = useState("");
-
-  const fetchStudents = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${apiBase}/students`);
-      const data = await res.json();
-      setStudents(data);
-      setError("");
-    } catch (err) {
-      setError("Failed to fetch students");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDeveloperDetails = async () => {
-    try {
-      const res = await fetch(`${apiBase}/developer`);
-      const data = await res.json();
-      setDeveloper(data);
-    } catch (error) {
-      setError("Failed to fetch Developer");
-    }
-  };
-  useEffect(() => {
-    fetchStudents();
-    fetchDeveloperDetails();
-  }, []);
-  console.log(students);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.registration_no || !form.course) {
-      setError("All fields are required");
-      return;
-    }
-    try {
-      setLoading(true);
-      if (editingId) {
-        await fetch(`${apiBase}/students/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        await fetch(`${apiBase}/students`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      }
-      setForm({ name: "", email: "", registration_no: "", course: "" });
-      setEditingId(null);
-      setError("");
-      fetchStudents();
-    } catch {
-      setError("Failed to save student");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (student) => {
-    setForm(student);
-    setEditingId(student.registration_no);
-    setError("");
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this student?"))
-      return;
-    setLoading(true);
-    try {
-      await fetch(`${apiBase}/students/${id}`, { method: "DELETE" });
-      fetchStudents();
-    } catch {
-      setError("Failed to delete student");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function App() {  
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <h1 className="text-4xl font-semibold mb-6 text-center text-blue-800">
-        Student Management
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow rounded p-6 mb-8 space-y-4"
-      >
-        {error && <p className="text-red-600 font-medium">{error}</p>}
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={form.name}
-            onChange={handleChange}
-            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            name="registration_no"
-            placeholder="Registration No"
-            value={form.registration_no}
-            onChange={handleChange}
-            disabled={!!editingId}
-            className={`flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-              editingId
-                ? "bg-gray-100 cursor-not-allowed"
-                : "focus:ring-blue-400"
-            }`}
-          />
-          <input
-            type="text"
-            name="course"
-            placeholder="Course"
-            value={form.course}
-            onChange={handleChange}
-            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 disabled:bg-blue-300 hover:bg-blue-700 text-white px-6 py-2 rounded transition"
-        >
-          {editingId ? "Update Student" : "Add Student"}
-        </button>
-      </form>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<Login />} />
 
-      {loading ? (
-        <p className="text-center text-gray-500">Loading students...</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded shadow">
-            <thead>
-              <tr className="bg-blue-100 text-blue-800 font-semibold">
-                <th className="p-3 border border-blue-200 text-left">Name</th>
-                <th className="p-3 border border-blue-200 text-left">Email</th>
-                <th className="p-3 border border-blue-200 text-left">
-                  Reg. Number
-                </th>
-                <th className="p-3 border border-blue-200 text-left">Course</th>
-                <th className="p-3 border border-blue-200 text-center">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center text-gray-600 p-6">
-                    No students found
-                  </td>
-                </tr>
-              )}
-              {students.map((student) => (
-                <tr key={student.id} className="hover:bg-blue-50">
-                  <td className="p-3 border border-blue-200">{student.name}</td>
-                  <td className="p-3 border border-blue-200">
-                    {student.email}
-                  </td>
-                  <td className="p-3 border border-blue-200">
-                    {student.registration_no}
-                  </td>
-                  <td className="p-3 border border-blue-200">
-                    {student.course}
-                  </td>
-                  <td className="p-3 border border-blue-200 flex justify-center gap-3">
-                    <button
-                      onClick={() => handleEdit(student.id)}
-                      className="text-yellow-600 hover:text-yellow-900 font-semibold"
-                      aria-label={`Edit ${student.name}`}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(student.id)}
-                      className="text-red-600 hover:text-red-900 font-semibold"
-                      aria-label={`Delete ${student.name}`}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-      <div className="border">
-        <p>This is developed by {developer.name}</p>
-      </div>
-    </div>
+          <Route
+            path="/student"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT"]}>
+                <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/teacher"
+            element={
+              <ProtectedRoute allowedRoles={["TEACHER"]}>
+                <TeacherDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-profile"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT"]}>
+                <CreateProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/scholarships"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT", "TEACHER", "ADMIN"]}>
+                <AllScholarships />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upload-docs"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT"]}>
+                <UploadDocuments />
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
+
+export default App;

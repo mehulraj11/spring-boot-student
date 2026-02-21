@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @PreAuthorize("hasAnyRole('STUDENT')")
-@RequestMapping("/students/{studentId}/documents")
+@RequestMapping("/students-documents")
 public class StudentDocumentController {
     private final StudentDocumentService studentDocumentService;
     public StudentDocumentController(StudentDocumentService studentDocumentService){
@@ -21,13 +21,12 @@ public class StudentDocumentController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('STUDENT')")
+    @PreAuthorize("hasRole('STUDENT')")
     public StudentDocumentDto upload(
-            @PathVariable Long studentId,
             @RequestParam("file")MultipartFile file
             ) throws IOException
     {
-        StudentDocument document = studentDocumentService.uploadDocument(studentId, file);
+        StudentDocument document = studentDocumentService.uploadDocument(file);
         return new StudentDocumentDto(
                 document.getStudentDocumentId(),
                 document.getFileName(),

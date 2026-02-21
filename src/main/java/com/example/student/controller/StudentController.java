@@ -21,39 +21,39 @@ public class    StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public ResponseEntity<List<StudentDto>> getStudents() {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<StudentDto> getStudent(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.getStudent(id));
     }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
+    @PostMapping
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentDto> createStudent(@Valid @RequestBody AddStudentDto addStudentDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createNewStudent(addStudentDto));
     }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentDto> updateStudent(@PathVariable Long id, @RequestBody AddStudentDto addStudentDto) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(id, addStudentDto));
     }
 
-    @PatchMapping("/modify/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentDto> patchStudent(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.patchStudent(id, updates));
     }

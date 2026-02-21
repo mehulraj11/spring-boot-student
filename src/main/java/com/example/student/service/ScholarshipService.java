@@ -2,13 +2,14 @@ package com.example.student.service;
 
 import com.example.student.dto.ScholarshipDto;
 import com.example.student.entity.Scholarship;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface ScholarshipService {
-    List<ScholarshipDto> getAll(
+    Page<ScholarshipDto> getAll(
             int page,
             int size,
             String sortBy,

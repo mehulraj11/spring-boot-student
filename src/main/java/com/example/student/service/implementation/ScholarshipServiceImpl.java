@@ -27,29 +27,33 @@ public class ScholarshipServiceImpl implements ScholarshipService {
         this.storageService = storageService;
     }
     @Override
-    public List<ScholarshipDto> getAll(
+    public Page<ScholarshipDto> getAll(
             int page,
             int size,
             String sortBy,
             String order
     ) {
-        Sort sort = order.equals("desc")
+
+        Sort sort = order.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Scholarship> scholarships = scholarshipRepository.findAll(pageable);
+
         log.info("list of all scholarships has been retrieved");
 
-        return scholarships.stream()
-                .map(scholarship -> new ScholarshipDto(
+        return scholarships.map(scholarship ->
+                new ScholarshipDto(
                         scholarship.getTitle(),
                         scholarship.getEligibility(),
                         scholarship.getAmount(),
                         scholarship.isActive()
-                )).toList();
+                )
+        );
     }
+
 
     @Override
     public Scholarship getById(Long id) {
@@ -85,8 +89,8 @@ public class ScholarshipServiceImpl implements ScholarshipService {
         scholarshipRepository.deleteById(id);
     }
     @Override
-    public List<ScholarshipDto> addScholarships(List<ScholarshipDto> scholarshipDtos) {
-        List<Scholarship> scholarships = scholarshipDtos.stream()
+    public List<ScholarshipDto> addScholarships(List<ScholarshipDto> scholarshipDto) {
+        List<Scholarship> scholarships = scholarshipDto.stream()
                 .map(dto -> new Scholarship(
                         null,
                         dto.getTitle(),
@@ -109,9 +113,10 @@ public class ScholarshipServiceImpl implements ScholarshipService {
 
     @Override
     public void uploadCsvFile(MultipartFile file) throws IOException {
-        List<String[]> rows = (List<String[]>) storageService.uploadCsv(file);
+        List<String> rows = storageService.uploadCsv(file);
         List<Scholarship> scholarships = rows.stream()
-                .map(data -> {
+                .map(row -> {
+                    String[] data = row.split(","); // data will be in a foramt of noraml string with ,
                     Scholarship s = new Scholarship();
                     s.setTitle(data[0]);
                     s.setEligibility(data[1]);
@@ -120,7 +125,6 @@ public class ScholarshipServiceImpl implements ScholarshipService {
                     return s;
                 })
                 .toList();
-
         scholarshipRepository.saveAll(scholarships);
     }
 }

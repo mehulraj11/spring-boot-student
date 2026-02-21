@@ -19,23 +19,23 @@ public class ScholarshipApplicationController {
         this.scholarshipApplicationService = scholarshipApplicationService;
     }
 
-    @PostMapping("/apply/{studentId}/{scholarshipId}")
-    @PreAuthorize("hasAnyRole('STUDENT')")
-    public ResponseEntity<Void> apply(@PathVariable Long studentId,
-                                      @PathVariable Long scholarshipId) {
+    @PostMapping
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Void> apply(@RequestParam Long studentId,
+                                      @RequestParam Long scholarshipId) {
 
         scholarshipApplicationService.apply(studentId, scholarshipId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-    @GetMapping("/pending")
-    @PreAuthorize("hasAnyRole('TEACHER')")
+    @GetMapping
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<List<ScholarshipApplicationDto>> getPendingApplications() {
         return ResponseEntity.ok(
                 scholarshipApplicationService.getPendingApplications()
         );
     }
-    @PatchMapping("/verify/{scholarshipApplicationId}")
-    @PreAuthorize("hasAnyRole('TEACHER')")
+    @PatchMapping("/{scholarshipApplicationId}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<String> applicationVerification(@PathVariable Long scholarshipApplicationId, @RequestParam ApplicationStatus status)
     {
         scholarshipApplicationService.verfiyApplication(scholarshipApplicationId, status);

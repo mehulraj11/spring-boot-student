@@ -30,7 +30,6 @@ import java.util.Optional;
 public class ScholarshipApplicationImpl implements ScholarshipApplicationService {
     private final StudentRepository studentRepository;
     private final ScholarshipRepository scholarshipRepository;
-
     private final ScholarshipApplicationRepository scholarshipApplicationRepository;
     private final UserRepository userRepository;
 
@@ -86,5 +85,4 @@ public class ScholarshipApplicationImpl implements ScholarshipApplicationService
         scholarshipApplicationRepository.save(application);
         log.info("Application with id {} has been verified as {}",scholarshipApplicationId, status);
     }
-
 }

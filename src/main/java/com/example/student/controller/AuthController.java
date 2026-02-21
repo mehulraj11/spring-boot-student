@@ -1,5 +1,6 @@
 package com.example.student.controller;
 
+import com.example.student.dto.LocalStorageDTO;
 import com.example.student.entity.AuthRequest;
 import com.example.student.entity.Users;
 import com.example.student.service.AuthService;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+    public ResponseEntity<LocalStorageDTO> generateToken(@RequestBody AuthRequest authRequest) throws Exception {
        return ResponseEntity.status(HttpStatus.OK).body(authService.createToken(authRequest));
     }
 

@@ -2,28 +2,29 @@ package com.example.student.service.implementation;
 
 import com.example.student.dto.AddStudentDto;
 import com.example.student.dto.StudentDto;
-import com.example.student.enums.Role;
 import com.example.student.entity.Student;
 import com.example.student.entity.Users;
 import com.example.student.exception.ContextAuthentication;
 import com.example.student.exception.CreateStudentException;
 import com.example.student.exception.StudentException;
-import com.example.student.exception.UnauthorizedAccess;
 import com.example.student.repository.StudentRepository;
 import com.example.student.repository.UserRepository;
 import com.example.student.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class StudentServiceImpl implements StudentService {
+
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     @Autowired
@@ -31,18 +32,15 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
     }
+    private String getCurrentUserEmail() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "UNKNOWN";
+    }
 
     @Override
     public List<StudentDto> getAllStudents() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedEmail = auth.getName();
-        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
-                .orElseThrow(()-> new ContextAuthentication("email not found"));
-        if(loggedInUser.getRole() == Role.STUDENT){
-            throw new UnauthorizedAccess("not authorized");
-        }
         List<Student> students = studentRepository.findAll();
-        log.info("{} has retrieved all students", authenticatedEmail);
+        log.info("{} has retrieved all students", getCurrentUserEmail());
         return students
                 .stream()
                 .map(student -> new StudentDto(
@@ -54,56 +52,38 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto getStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
-        log.info("{} has retrieved student data by using id{}",student.getName(), student.getStudentId());
+        log.info("{} has retrieved student data by using id{}",getCurrentUserEmail(), student.getStudentId());
         return new StudentDto(
                 student.getName(),
                 student.getDob());
     }
 
     @Override
-    public StudentDto createNewStudent(AddStudentDto addStudentDto) throws CreateStudentException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authUserEmail = auth.getName();
+    public StudentDto createNewStudent(AddStudentDto dto) {
 
-        Users loggedInUser = userRepository.findByEmail(authUserEmail)
-                .orElseThrow(()->new ContextAuthentication("email not found"));
-        log.info("not able to find user : {}", authUserEmail);
-        Users targetUser;
-        if (loggedInUser.getRole() == Role.STUDENT) {
-            targetUser = loggedInUser;
-        }else{
-            if (addStudentDto.getUserId() == null) {
-                log.info("userId is required for admin/verifier");
-                throw new CreateStudentException("userId is required for admin/verifier");
-            }
-            targetUser = userRepository.findById(addStudentDto.getUserId())
-                    .orElseThrow(() -> new CreateStudentException("Target user not found"));
-        }
-        if (studentRepository.existsByUsers_UserId(targetUser.getUserId())) {
+        Users user = userRepository.findByEmail(getCurrentUserEmail())
+                .orElseThrow(() -> new ContextAuthentication("User not found"));
+
+        if (studentRepository.existsByUsers_UserId(user.getUserId())) {
             throw new CreateStudentException("Student profile already exists");
         }
+
         Student student = new Student();
-        student.setUsers(targetUser);
-        student.setName(addStudentDto.getName());
-        student.setDob(addStudentDto.getDob());
-        Student createdStudent = studentRepository.save(student);
-        log.info("{} has created their profile",student.getName());
+        student.setUsers(user);
+        student.setName(dto.getName());
+        student.setDob(dto.getDob());
+
+        Student savedStudent = studentRepository.save(student);
+
+        log.info("Student profile created for email: {}", getCurrentUserEmail());
+
         return new StudentDto(
-                createdStudent.getName(),
-                createdStudent.getDob()
+                savedStudent.getName(),
+                savedStudent.getDob()
         );
     }
-
     @Override
     public void deleteStudent(Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedEmail = auth.getName();
-        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
-                .orElseThrow(()-> new ContextAuthentication("email not found"));
-        if(loggedInUser.getRole() != Role.ADMIN){
-            log.info("unauthorized access : {}", loggedInUser.getEmail());
-            throw new UnauthorizedAccess("only admins allowed");
-        }
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         studentRepository.delete(student);
         log.info("student id :'{}' has been deleted", student.getStudentId());
@@ -111,20 +91,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto updateStudent(Long id, AddStudentDto addStudentDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedEmail = auth.getName();
-        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
-                .orElseThrow(()-> new StudentException(id));
-
-        if(loggedInUser.getRole() == Role.STUDENT){
-            throw new UnauthorizedAccess("not authorized");
-        }
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentException(id));
-
         student.setName(addStudentDto.getName());
         student.setDob(addStudentDto.getDob());
-
         Student updatedStudent = studentRepository.save(student);
         log.info("student id :{} profile updated", student.getStudentId());
         return new StudentDto(
@@ -132,17 +102,8 @@ public class StudentServiceImpl implements StudentService {
                 updatedStudent.getDob()
         );
     }
-//private Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedEmail = auth.getName();
-        Users loggedInUser = userRepository.findByEmail(authenticatedEmail)
-                .orElseThrow(()-> new StudentException(id));
-
-        if(loggedInUser.getRole() == Role.STUDENT){
-            throw new UnauthorizedAccess("not authorized");
-        }
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         updates.forEach((key, value) -> {
             switch (key) {
