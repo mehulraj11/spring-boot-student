@@ -105,35 +105,39 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
         );
     }
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(Map.of("error", ex.getMessage()));
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+        HttpStatus.BAD_REQUEST                );
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFound(UsernameNotFoundException ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", ex.getMessage()));
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(UsernameNotFoundException ex) {
+        return new  ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+        HttpStatus.BAD_REQUEST
+                );
+
     }
 
     @ExceptionHandler({
             io.jsonwebtoken.JwtException.class
     })
-    public ResponseEntity<?> handleJwtException(RuntimeException ex) {
+    public ResponseEntity<ErrorResponseDto> handleJwtException(RuntimeException ex) {
         log.error("{}",ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Invalid or expired token"));
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneric(Exception ex) {
+    public ResponseEntity<ErrorResponseDto> handleGeneric(Exception ex) {
         log.error("Unhandled exception occurred", ex);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Something went wrong"));
+        return new ResponseEntity<>(
+                new ErrorResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()),
+                HttpStatus.BAD_REQUEST
+        );
     }
     @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<ErrorResponseDto> handleJpaSystemException(

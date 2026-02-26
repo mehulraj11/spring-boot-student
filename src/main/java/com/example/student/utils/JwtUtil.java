@@ -21,7 +21,6 @@ public class JwtUtil {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
@@ -30,7 +29,6 @@ public class JwtUtil {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }

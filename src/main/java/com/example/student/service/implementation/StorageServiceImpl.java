@@ -79,7 +79,6 @@ public class StorageServiceImpl implements StorageService {
                 rows.add(line);
             }
         }
-
         return rows;
     }
 
