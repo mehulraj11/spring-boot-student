@@ -1,12 +1,13 @@
 package com.example.student.dto;
 
 
+//import java.io.Serializable;
 import java.time.LocalDate;
-
 public class StudentDto {
     private String name;
     private LocalDate dob;
 
+    public StudentDto(){}
     public StudentDto(String name, LocalDate dob) {
         this.name = name;
         this.dob = dob;

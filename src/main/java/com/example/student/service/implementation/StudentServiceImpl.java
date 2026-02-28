@@ -12,6 +12,9 @@ import com.example.student.repository.UserRepository;
 import com.example.student.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +40,7 @@ public class StudentServiceImpl implements StudentService {
         return auth != null ? auth.getName() : "UNKNOWN";
     }
 
+    @Cacheable(value = "studentsList", key = "'all'")
     @Override
     public List<StudentDto> getAllStudents() {
         List<Student> students = studentRepository.findAll();
@@ -48,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
                         student.getDob()))
                 .toList();
     }
-
+    @Cacheable(value = "students", key = "#id")
     @Override
     public StudentDto getStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
@@ -82,6 +86,7 @@ public class StudentServiceImpl implements StudentService {
                 savedStudent.getDob()
         );
     }
+    @CacheEvict(value = "students", key = "#id")
     @Override
     public void deleteStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
@@ -89,6 +94,7 @@ public class StudentServiceImpl implements StudentService {
         log.info("student id :'{}' has been deleted", student.getStudentId());
     }
 
+    @CachePut(value = "students", key = "#id")
     @Override
     public StudentDto updateStudent(Long id, AddStudentDto addStudentDto) {
         Student student = studentRepository.findById(id)
@@ -102,13 +108,14 @@ public class StudentServiceImpl implements StudentService {
                 updatedStudent.getDob()
         );
     }
+    @CachePut(value = "students", key = "#id")
     @Override
     public StudentDto patchStudent(Long id, Map<String, Object> updates) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new StudentException(id));
         updates.forEach((key, value) -> {
             switch (key) {
                 case "name" -> student.setName((String) value);
-                case "dob" -> student.setDob((LocalDate) value);
+                case "dob" -> student.setDob(LocalDate.parse((String) value));
             }
         });
         Student updated = studentRepository.save(student);
