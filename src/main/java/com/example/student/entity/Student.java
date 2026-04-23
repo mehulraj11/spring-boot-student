@@ -15,9 +15,7 @@ public class Student {
 
     private String name;
     private LocalDate dob;
-    public Student() {
-    }
-
+    public Student() {}
     public Student(Long studentId,
                    Users users,
                    String name,

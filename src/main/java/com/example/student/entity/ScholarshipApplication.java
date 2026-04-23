@@ -27,16 +27,16 @@ public class ScholarshipApplication {
     @JoinColumn(name = "scholarship_id", nullable = false)
     private Scholarship scholarship;
 
+    @ManyToOne
+    @JoinColumn(name = "verified_by")
+    private Users verifier;
+
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
     private LocalDateTime appliedAt;
 
     private LocalDateTime verifiedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "verified_by")
-    private Users verifier;
 
     private String remarks;
 

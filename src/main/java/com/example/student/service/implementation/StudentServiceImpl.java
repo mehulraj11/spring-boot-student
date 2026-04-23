@@ -71,7 +71,6 @@ public class StudentServiceImpl implements StudentService {
         if (studentRepository.existsByUsers_UserId(user.getUserId())) {
             throw new CreateStudentException("Student profile already exists");
         }
-
         Student student = new Student();
         student.setUsers(user);
         student.setName(dto.getName());

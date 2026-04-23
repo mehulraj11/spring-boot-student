@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -20,11 +18,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ContextAuthentication.class)
     public ResponseEntity<ErrorResponseDto> handleContextAuthentication(ContextAuthentication c){
         log.info("email not found for authorization :{}", c.getMessage());
-        return new ResponseEntity<>(
+        return ResponseEntity.badRequest().body(
                 new ErrorResponseDto(
                         c.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()
-                ),
-                HttpStatus.BAD_REQUEST);
+                ));
     }
 
 //    SQL ERRORS
@@ -88,6 +85,10 @@ public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
         );
     }
 
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<ErrorResponseDto> handleWrongPasswordException(WrongPasswordException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()));
+    }
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ErrorResponseDto> handleGenericException(GenericException g) {
         return new ResponseEntity<>(

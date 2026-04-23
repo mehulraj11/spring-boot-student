@@ -29,12 +29,7 @@ public class JwtUtil {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String extractEmail(String token) {
-        return extractClaims(token).getSubject();
-    }
-    public String extractRole(String token) {
-        return extractClaims(token).get("role", String.class);
-    }
+
 //        this will store the payload of the JWT
 //    used before security context holder works for jwt before complete authentication
     private Claims extractClaims(String token) {
@@ -44,11 +39,12 @@ public class JwtUtil {
                 .parseClaimsJws(token)//checks expiration automatically
                 .getBody();//extract payload and return it as claims object
     }
-
-    public boolean validateToken(String email, UserDetails usersDetails, String token) {
-        return email.equals(usersDetails.getUsername()) && !isTokenExpired(token);
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
     }
-
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
+    }
     public boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }

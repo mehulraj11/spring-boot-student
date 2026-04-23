@@ -1,6 +1,7 @@
 package com.example.student.config;
 
 import com.example.student.filter.JwtFilter;
+import com.example.student.filter.RateLimiterFilter;
 import com.example.student.service.implementation.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,11 +34,16 @@ public class SecurityConfig {
 //    client -> jwt filter -> token validates -> loads user -> spring authentication object set -> security contex -> authorization -> controller
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtFilter jwtFilter;
+    private final RateLimiterFilter rateLimiterFilter;
 
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtFilter jwtFilter) {
+    public SecurityConfig(
+            UserDetailsServiceImpl userDetailsService,
+            JwtFilter jwtFilter,
+            RateLimiterFilter rateLimiterFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
+        this.rateLimiterFilter = rateLimiterFilter;
     }
 
     @Bean
@@ -53,6 +59,7 @@ public class SecurityConfig {
                                 "/login")
                         .permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(rateLimiterFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
