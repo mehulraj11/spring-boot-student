@@ -22,7 +22,12 @@ public class RateLimiterFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException
+    {
         String ip = request.getRemoteAddr();
         Long currentTime = System.currentTimeMillis();
 
@@ -45,6 +50,5 @@ public class RateLimiterFilter extends OncePerRequestFilter {
             return;
         }
         filterChain.doFilter(request, response);
-
     }
 }

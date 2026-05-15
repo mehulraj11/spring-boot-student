@@ -5,6 +5,7 @@ import com.example.student.entity.Scholarship;
 import com.example.student.repository.ScholarshipRepository;
 import com.example.student.service.ScholarshipService;
 import com.example.student.service.StorageService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
