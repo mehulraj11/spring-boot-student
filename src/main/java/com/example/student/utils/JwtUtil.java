@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +16,13 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
-    private final String SECRET = "hello_helloo_bheem_ki_shakti_dhoom_machaye";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${secret_key}")
+    private  String SECRET;
+    private  SecretKey key;
+    @PostConstruct
+    public void init(){
+        key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    }
 
     public String generateToken(String email, String role) {
 

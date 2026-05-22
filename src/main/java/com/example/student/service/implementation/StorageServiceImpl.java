@@ -41,14 +41,14 @@ public class StorageServiceImpl implements StorageService {
                 StringUtils.cleanPath(file.getOriginalFilename());
 
         File destinationFile = new File(uploadDirFile, fileName);
-        try (InputStream inputStream = file.getInputStream();
-             FileOutputStream outputStream = new FileOutputStream(destinationFile)) {
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream((File) file));
+             BufferedOutputStream bufferedOutputStream =new BufferedOutputStream( new FileOutputStream(destinationFile))) {
 
             byte[] buffer = new byte[8192];
             int bytesRead;
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+                bufferedOutputStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
